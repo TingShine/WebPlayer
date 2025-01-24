@@ -1,0 +1,2 @@
+
+export { WebFetcher } from './class'

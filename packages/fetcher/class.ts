@@ -1,20 +1,40 @@
 import { IFetcherInput } from "./type";
 import { isFile, isURL } from "./utils";
+import { write, file } from 'opfs-tools'
+
+const getID = () => +new Date()
 
 export class WebFetcher {
-	constructor() {}
-	#readstream: ReadableStream<Uint8Array<ArrayBufferLike>>
+	#localFile = `codecs-temp-dir/file_${getID()}`
+	public loaded = false
 
-	async load (input: IFetcherInput): Promise<ReadableStream<Uint8Array<ArrayBufferLike>>> {
+	public async load (input: IFetcherInput): Promise<string> {
+		if (this.loaded) throw new Error('WebFetcher can only load once, please invoke `destroy` method if reuse the instance')
+
 		if (isURL(input)) {
-			this.#readstream = await this.fetchRemoteURL(input)
+			await write(this.#localFile, await this.fetchRemoteURL(input))
 		} else if (isFile(input)) {
-			this.#readstream = this.getLocalFileStream(input)
+			await write(this.#localFile, this.getLocalFileStream(input))
+		} else if (input instanceof ReadableStream) {
+			await write(this.#localFile, input)
 		} else {
-			this.#readstream = input
+			throw new Error('Invalid input format, only receive url, file or readablestream')
 		}
 
-		return this.#readstream
+		this.loaded = true
+		return this.#localFile
+	}
+
+	public async getReader () {
+		if (!this.loaded) throw new Error('The instance has not loaded file')
+
+		return await file(this.#localFile).createReader()
+	}
+
+	public async destroy() {
+		if (this.loaded) await file(this.#localFile).remove()
+		this.loaded = false
+		this.#localFile = `codecs-temp-dir/file_${getID()}`
 	}
 
 	private fetchRemoteURL (url: string) {

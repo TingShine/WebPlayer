@@ -1,0 +1,25 @@
+name: Deploy Example #action名称
+on: [push] #在推送的时候运行此action
+
+jobs:
+  build_job:
+    runs-on: ubuntu-latest  #运行环境
+    name: build
+    steps:
+      # check out the repository
+      - name: Checkout    
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: build
+          CLEAN: true

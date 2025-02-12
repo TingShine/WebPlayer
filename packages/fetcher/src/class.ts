@@ -10,7 +10,7 @@ export class WebFetcher {
 
 	public async load (input: IFetcherInput): Promise<string> {
 		if (this.loaded) throw new Error('WebFetcher can only load once, please invoke `destroy` method if reuse the instance')
-
+		
 		if (isURL(input)) {
 			await write(this.#localFile, await this.fetchRemoteURL(input))
 		} else if (isFile(input)) {
@@ -27,6 +27,9 @@ export class WebFetcher {
 
 	public async getReader () {
 		if (!this.loaded) throw new Error('The instance has not loaded file')
+
+			console.log('ojbk');
+			
 
 		return await file(this.#localFile).createReader()
 	}

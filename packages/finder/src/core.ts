@@ -1,14 +1,14 @@
-import { file } from "opfs-tools";
-import { ExtMP4Sample } from "../demuxer/type";
+import { ExtMP4Sample } from "@web-player/demuxer";
 import { decodeChunks, sleep, videoSamples2Chunks } from "./utils";
-import { CommonLog } from "../common/log";
+import { CommonLog } from "../../common/log";
+import { IFileReader } from '@web-player/fetcher'
 
 const log = new CommonLog('VideoFrameFinder')
 
 export class VideoFrameFinder {
   #dec: VideoDecoder | null = null;
   constructor(
-    public localFileReader: Awaited<ReturnType<ReturnType<typeof file>['createReader']>>,
+    public localFileReader: IFileReader,
     public samples: ExtMP4Sample[],
     public conf: VideoDecoderConfig,
   ) {}
@@ -241,7 +241,7 @@ export class VideoFrameFinder {
 
 function memoryUsageInfo() {
   try {
-    // @ts-ignore
+    //@ts-expect-error Performance maybe not contain memory
     const mem = performance.memory;
     return {
       jsHeapSizeLimit: mem.jsHeapSizeLimit,

@@ -1,9 +1,11 @@
-import { WebDemuxer } from "./demuxer/class";
-import { WebFetcher } from "./fetcher";
-import { IFetcherInput } from "./fetcher/type";
-import { VideoFrameFinder } from "./finder";
+import { WebDemuxer } from "@web-player/demuxer";
+import { WebFetcher } from "@web-player/fetcher";
+import type { IFetcherInput } from "@web-player/fetcher";
+import { VideoFrameFinder } from "./core";
+import { VideoTrackOpts } from 'mp4box'
+import { IThumbnailsParams } from "./types";
 
-export class VideoExtractFrameModule {
+export class CodecsExtractFrameModule {
 	public state = {
 		fetched: false,
 		demuxed: false,
@@ -14,7 +16,11 @@ export class VideoExtractFrameModule {
 	#demuxer: WebDemuxer = new WebDemuxer()
 	#frameFinder: VideoFrameFinder | null = null
 
-	public async load(input: IFetcherInput) {
+	static isSupport() {
+		return window?.VideoDecoder && window?.isSecureContext
+	}
+
+	public async load(input: IFetcherInput): Promise<VideoTrackOpts> {
 		await this.#fetcher.load(input)
 		this.state.fetched = true
 
@@ -34,13 +40,13 @@ export class VideoExtractFrameModule {
 		return vf
 	}
 
-	public async thumbnails (params: { start: number, end: number, step: number }) {
+	public async thumbnails (params: IThumbnailsParams) {
 		if (!this.state.demuxed)  throw new Error("Should load first")
 
 		const frameFinder = new VideoFrameFinder(await this.#fetcher.getReader(), this.#demuxer.videoSamples, this.#demuxer.decodeConf!.video!)
 		const { start, end, step } = params
 
-		const frames = []
+		const frames: VideoFrame[] = []
 		let cur = start
 		while (cur <= end) {
 			const vf = await frameFinder.find(cur)

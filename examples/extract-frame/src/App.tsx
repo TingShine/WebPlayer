@@ -1,18 +1,18 @@
 import { useRef, useState } from 'react'
 
 import './App.css'
-import { VideoExtractFrameModule } from '../packages'
+import { CodecsExtractFrameWorkerModule } from '@web-player/finder'
 import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { message, Upload, Image } from 'antd';
-import { videoFrame2Url } from '../packages/common/utils';
+import { videoFrame2Url } from '../../../packages/common/utils';
 import TimeLine, { TimeLineAPI } from './TimeLine';
 import { debounce } from 'lodash-es'
 
 const { Dragger } = Upload;
 
 function App() {
-  const ref = useRef<VideoExtractFrameModule>()
+  const ref = useRef<CodecsExtractFrameWorkerModule>()
   const [src, setSrc] = useState('')
   const timeLineRef = useRef<TimeLineAPI>(null)
 
@@ -22,8 +22,8 @@ function App() {
     multiple: false,
     accept: 'video/mp4,video/quicktime',
     beforeUpload: async (file) => {
-      ref.current = new VideoExtractFrameModule()
-
+      ref.current = new CodecsExtractFrameWorkerModule()
+      
       try {
         const { duration } = await ref.current.load(file)
         durationRef.current = duration!

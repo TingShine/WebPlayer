@@ -23,5 +23,5 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
   },
-  "include": ["example", "packages"]
+  "include": ["./src"]
 }

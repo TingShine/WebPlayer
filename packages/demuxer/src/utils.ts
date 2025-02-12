@@ -1,8 +1,7 @@
 import mp4box, { AudioTrackOpts, MP4ArrayBuffer, MP4File, MP4Info, MP4Sample, TrakBoxParser, VideoTrackOpts } from 'mp4box'
 import { ExtMP4Sample } from './type'
-import { WebFetcher } from '../fetcher'
-import { file } from 'opfs-tools'
-import { MP4DecodeConf } from '../decoder/type'
+import { WebFetcher, IFileReader } from '@web-player/fetcher'
+import { MP4DecodeConf } from '../../decoder/type'
 
 export async function mp4FileToSamples(fetcher: WebFetcher) {
 	let mp4Info: MP4Info | null = null
@@ -44,7 +43,7 @@ export async function mp4FileToSamples(fetcher: WebFetcher) {
 		throw new Error('Stream not contain any sample')
 	}
 
-	// TODO: 修复首帧黑屏
+	// 修复首帧黑屏
 	fixFirstBlackFrame(videoSamples)
 
 	return {
@@ -76,7 +75,7 @@ function fixFirstBlackFrame(samples: ExtMP4Sample[]) {
 }
 
 export async function quickParseMP4File(
-	reader: Awaited<ReturnType<ReturnType<typeof file>['createReader']>>,
+	reader: IFileReader,
 	onReady: (data: { mp4boxFile: MP4File, info: MP4Info }) => void,
 	onSamples: (id: number, sampleType: 'video' | 'audio', samples: MP4Sample[]) => void
 ) {

@@ -1,0 +1,28 @@
+{
+  "name": "@web-player/demuxer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.mjs",
+  "types": "dist/types/demuxer/src/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "rollup -c --watch",
+    "build": "rollup -c"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mp4box": "^0.5.3",
+    "@web-player/fetcher": "workspace:*"
+  },
+  "devDependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "rollup": "^4.34.6",
+    "tslib": "^2.8.1"
+  }
+}

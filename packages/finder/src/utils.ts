@@ -1,9 +1,9 @@
-import { file } from "opfs-tools"
-import { ExtMP4Sample } from "../demuxer/type"
+import { ExtMP4Sample } from "@web-player/demuxer"
+import { IFileReader } from "@web-player/fetcher"
 
 export const sleep = async (time: number) => new Promise((resolve) => setTimeout(resolve, time))
 
-export const videoSamples2Chunks = async (samples: ExtMP4Sample[], reader: Awaited<ReturnType<ReturnType<typeof file>['createReader']>>) => {
+export const videoSamples2Chunks = async (samples: ExtMP4Sample[], reader: IFileReader) => {
 	const first = samples[0]
 	const last = samples.at(-1)
 	if (last == null) return []

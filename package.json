@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm run --filter '@web-player/*...' --stream --parallel dev",
-    "example": "pnpm --filter extract-frame-example dev",
+    "dev:finder": "pnpm run --filter '@web-player/finder...' --stream --parallel  dev & npm run example:finder",
+    "example:finder": "pnpm --filter finder-example dev",
     "build:finder": "pnpm run --filter '@web-player/finder...' --stream  build",
     "lint": "eslint .",
     "preview": "vite preview"

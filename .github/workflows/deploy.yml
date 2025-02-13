@@ -33,11 +33,11 @@ jobs:
         run: |
           pnpm install
           pnpm run build:finder
-          cd examples/extract-frame
+          cd examples/finder
           npm run build
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.2.2
         with:
           access_token: ${{ secrets.GH_TOKEN }}
           branch: gh-pages
-          folder: examples/extract-frame/dist
+          folder: examples/finder/dist

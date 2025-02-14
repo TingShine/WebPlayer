@@ -1,6 +1,17 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted } from 'vue';
+import { PlayerManager } from '../../../packages/manager'
+
+onMounted(() => {
+  new PlayerManager({
+    container: '.container',
+    width: '800px',
+    height: '400px',
+    url: 'https://mms.vod.susercontent.com/api/v4/11111000/mms/my-11111000-6ke14-lxtirx2rlojq57.ori.mp4'
+  })
+})
 </script>
+
 
 <template>
   <div>
@@ -11,7 +22,7 @@ import HelloWorld from './components/HelloWorld.vue'
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  <div class="container"></div>
 </template>
 
 <style scoped>

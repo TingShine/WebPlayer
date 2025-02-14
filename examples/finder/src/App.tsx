@@ -38,8 +38,8 @@ function App() {
         }
 
         const start2 = performance.now()
-        const frames = await ref.current.thumbnails({ start: 0, end: duration!, step: Math.floor(duration! / 8) })
-        const cost2 = performance.now() - start2
+        const frames = await ref.current.thumbnails({ start: 0, end: duration!, step: 1e6 })
+        const cost2 = performance.now() - start2        
 
         timeLineRef.current?.load(frames, Number(cost2.toFixed(2)))
       } catch (err) {

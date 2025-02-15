@@ -11,6 +11,10 @@
     "noEmit": true,
     "rootDir": "../",
     "resolveJsonModule": true,
+    "paths": {
+      "@fetcher": ["../fetcher"],
+      "@demuxer": ["../demuxer"],
+    }
   },
-  "include": ["./src/*", "../types/*", "worker.d.ts"],
+  "include": ["./src/*.ts", "./worker.d.ts", "../types/*.ts", "../demuxer/*.ts", "../fetcher/*.ts"]
 }

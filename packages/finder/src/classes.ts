@@ -1,6 +1,6 @@
-import { WebDemuxer } from "@web-player/demuxer";
-import { WebFetcher } from "@web-player/fetcher";
-import type { IFetcherInput } from "@web-player/fetcher";
+import { WebDemuxer } from "@demuxer";
+import { WebFetcher } from "@fetcher";
+import type { IFetcherInput } from "@fetcher";
 import { VideoFrameFinder } from "./core";
 import { VideoTrackOpts } from 'mp4box'
 import { IThumbnailsParams } from "./types";

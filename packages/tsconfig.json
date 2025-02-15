@@ -12,5 +12,5 @@
     "rootDir": "../",
     "resolveJsonModule": true,
   },
-  "include": ["./src/*", "../types/*"],
+  "include": ["./**/*.ts"],
 }

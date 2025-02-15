@@ -19,9 +19,8 @@
   "author": "Shine",
   "license": "ISC",
   "dependencies": {
-    "@web-player/demuxer": "workspace:*",
-    "@web-player/fetcher": "workspace:*",
-    "mp4box": "^0.5.3"
+    "mp4box": "^0.5.3",
+    "opfs-tools": "^0.7.0"
   },
   "devDependencies": {
     "@rollup/plugin-babel": "^6.0.4",

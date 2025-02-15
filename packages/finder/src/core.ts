@@ -1,7 +1,7 @@
-import { ExtMP4Sample } from "@web-player/demuxer";
+import { ExtMP4Sample } from "@demuxer";
 import { decodeChunks, sleep, videoSamples2Chunks } from "./utils";
 import { CommonLog } from "../../common/log";
-import { IFileReader } from '@web-player/fetcher'
+import { IFileReader } from '@fetcher'
 
 const log = new CommonLog('VideoFrameFinder')
 

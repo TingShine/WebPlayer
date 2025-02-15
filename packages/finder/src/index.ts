@@ -1,5 +1,5 @@
 import { VideoTrackOpts } from "mp4box"
-import { IFetcherInput } from "@web-player/fetcher"
+import { IFetcherInput } from "@fetcher"
 import { WorkerEventEnum } from "./constants"
 import { IThumbnailsParams, WorkerResponse } from "./types"
 import { CustomError, ErrorTypeEnum } from '../../common/error'

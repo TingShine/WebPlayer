@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev:finder": "pnpm run --filter '@web-player/finder...' --stream --parallel  dev & npm run example:finder",
+    "dev:finder": "pnpm run --filter '@web-player/finder' dev & npm run example:finder",
     "example:finder": "pnpm --filter finder-example dev",
     "build:finder": "pnpm run --filter '@web-player/finder...' --stream  build",
     "lint": "eslint .",

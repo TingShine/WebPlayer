@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { PlayerManager } from '../../../packages/manager'
+import { PlayerManager } from '@web-player/base'
 
 onMounted(() => {
   new PlayerManager({

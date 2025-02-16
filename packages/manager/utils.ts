@@ -1,5 +1,6 @@
-import { ExtMP4Sample } from "../demuxer/dist/types/demuxer/src"
-import { IFileReader } from "../fetcher/dist/types/src"
+import { ExtMP4Sample } from "../demuxer"
+import { IFileReader } from "../fetcher"
+import { IPlayerManagerOptions } from "./type"
 
 
 export const videoSamples2Chunks = async (samples: ExtMP4Sample[], reader: IFileReader) => {
@@ -39,4 +40,22 @@ export const videoSamples2Chunks = async (samples: ExtMP4Sample[], reader: IFile
 			})
 		})
 	)
+}
+
+const isString = (s: unknown): s is String => Object.prototype.toString.call(s) === '[object String]'
+export const checkOptions = (options: IPlayerManagerOptions) => {
+	if (!options.url || !isString(options.url)) {
+		throw new Error('Invalid options, url must be a string')
+	}
+
+	if (!options.container || !isString(options.container)) {
+		throw new Error('Invalid options, container must be a string')
+	}
+
+	const dom = document.querySelector(options.container)
+	if (!dom) throw new Error('Invalid options, container must be a DOM element')
+}
+
+export const calculateFPS = () => {
+	
 }

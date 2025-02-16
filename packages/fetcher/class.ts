@@ -28,9 +28,6 @@ export class WebFetcher {
 	public async getReader () {
 		if (!this.loaded) throw new Error('The instance has not loaded file')
 
-			console.log('ojbk');
-			
-
 		return await file(this.#localFile).createReader()
 	}
 

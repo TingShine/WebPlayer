@@ -3,44 +3,77 @@ import { IPlayerManagerOptions } from "./type";
 import { WebFetcher } from '../fetcher'
 import { WebDemuxer } from '../demuxer'
 import { WebVideoDecoder } from '../decoder'
-import { videoSamples2Chunks } from "./utils";
+import { checkOptions, videoSamples2Chunks } from "./utils";
 import { Queue } from '../common/queue'
 
-
 export class PlayerManager {
-	videoRenderControl: VideoRender
-	fetcher: WebFetcher = new WebFetcher()
-	demuxer: WebDemuxer = new WebDemuxer()
-	decoder: WebVideoDecoder | null = null
+	private videoRenderControl: VideoRender
+	private fetcher: WebFetcher = new WebFetcher()
+	private demuxer: WebDemuxer = new WebDemuxer()
+	private decoder: WebVideoDecoder | null = null
 
-	frames: Queue<VideoFrame> = new Queue({ maxSize: 100 })
-	cursorIndex = 0
+	private frames: Queue<VideoFrame> = new Queue({ maxSize: 100 })
+	private cursorIndex = 0
+
+	private hasError: boolean = false
+
+	private duration: number = 0
+	private lastRenderTime: number = 0
+	private timer: number = 0
 
 	constructor(private options: IPlayerManagerOptions) {
-		this.videoRenderControl = new VideoRender(options)
-		this.fetcher.load(options.url).then(() => {
-			this.demuxer.demux(this.fetcher).then(() => {
-				this.initDecoder()
-			})
-		})
+		checkOptions(options)
+
+		this.initUI()
+		this.fetchAndDemux()
+	}
+
+	public destroy() {
+		this.videoRenderControl.destroy()
+		this.demuxer.destroy()
+		this.fetcher.destroy()
+	}
+
+	private initUI() {
+		this.videoRenderControl = new VideoRender(this.options)
+	}
+
+	private async fetchAndDemux() {
+		try {
+			await this.fetcher.load(this.options.url)
+			await this.demuxer.demux(this.fetcher)
+
+			const vt = this.demuxer.videoTrack
+			if (!vt) {
+				this.hasError = true
+				return
+			}
+
+			const { width, height, duration } = vt
+			this.videoRenderControl.setMetaData({ width, height })
+			this.duration = duration / 1e3
+
+			this.initDecoder()
+		} catch (err) {
+			this.hasError = true
+		}
 	}
 
 	private async initDecoder() {
-		const vt = this.demuxer.videoTrack
-		if (vt) {
-			const { width, height, } = vt
-			this.videoRenderControl.setMetaData({ width, height })
+		if (this.hasError) return
 
-			const decodeConf = this.demuxer.decodeConf
-			if (decodeConf?.video && (await WebVideoDecoder.isSupport(decodeConf.video))) {
-				this.decoder = new WebVideoDecoder(decodeConf.video, this.onFrames.bind(this), (err) => {
-					console.error(err)
-				})
 
-				this.cursorIndex = 0
-				this.render()
-				this.startDecode()
-			}
+		const decodeConf = this.demuxer.decodeConf
+		if (decodeConf?.video && (await WebVideoDecoder.isSupport(decodeConf.video))) {
+			this.decoder = new WebVideoDecoder(decodeConf.video, this.onFrames.bind(this), (err) => {
+				console.error(err)
+			})
+
+			this.cursorIndex = 0
+			this.render()
+			this.startDecode()
+		} else {
+			this.hasError = true
 		}
 	}
 
@@ -59,17 +92,68 @@ export class PlayerManager {
 	}
 
 	private render() {
-		requestAnimationFrame(() => {
-			const vf = this.frames.shift()
-			if (vf) {
-				this.videoRenderControl.draw(vf)
+		if (this.timer) clearTimeout(this.timer)
+		
+
+		const vf = this.frames.shift()
+		console.log('run', vf);
+
+		if (vf) {
+			const duration = vf.duration / 1e3
+			const now = performance.now()
+			let costTime = now - this.lastRenderTime
+
+			if (costTime > duration) {
+				
+				// 仍为下一帧，缩减时间
+				if (costTime < 2 * duration) {
+					this.drawFrame(vf)
+					this.timer = setTimeout(() => this.render(), costTime - duration)
+					return
+				}
+
+				// 跳帧
+				costTime -= duration
+				while (this.frames.length) {
+					let vf = this.frames.shift()
+					costTime -= vf.duration / 1e3
+					if (costTime < duration) {
+						this.drawFrame(vf)
+						this.timer = setTimeout(() => this.render(), duration - costTime)
+						return
+					}
+					vf.close()
+				}
+
+				return
 			}
 
-			if (this.frames.canAddSize >= 60) {
+			this.drawFrame(vf)
+
+			this.timer = setTimeout(() => this.render(), duration - costTime)
+		} else {
+			// 没有帧
+			if (!this.isPlayEnd) {
+				
 				this.startDecode()
+				this.timer = setTimeout(() => this.render(), 50)
+			} else {
+				console.log('play ended');
 			}
+		}
+	}
 
-			this.render()
-		})
+	private drawFrame(frame: VideoFrame) {
+		this.lastRenderTime = performance.now()
+		this.videoRenderControl.draw(frame)
+		const timestamp = frame.timestamp / 1e3
+		const lastFrame = this.frames.at(0)
+		const firstFrame = this.frames.at(-1)
+		this.videoRenderControl.setProgress(timestamp / (this.duration ?? 1) * 100, lastFrame && firstFrame ? ((firstFrame.timestamp - lastFrame.timestamp) / 1e3 / this.duration * 100) : 0)
+		frame.close()
+	}
+
+	private get isPlayEnd () {
+		return this.cursorIndex >= this.demuxer.videoSamples.length && this.decoder.decodeQueueSize === 0
 	}
 }

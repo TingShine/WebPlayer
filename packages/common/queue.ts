@@ -63,6 +63,10 @@ export class Queue<T = any> {
 		return result
 	}
 
+	at(pos: number) {
+		return this.#list.at(pos)
+	}
+
 	clear() {
 		const length = this.#list.length
 		this.#list = []

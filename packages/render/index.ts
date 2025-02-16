@@ -1,3 +1,4 @@
+import { ProgressBar } from "./components/progress";
 import { IVideoRenderOptions } from "./type";
 
 export class VideoRender {
@@ -6,6 +7,9 @@ export class VideoRender {
 	private wrapper: HTMLDivElement
 	private canvas: HTMLCanvasElement
 	private context: CanvasRenderingContext2D
+
+	private overlay: HTMLDivElement
+	private progressBar: ProgressBar
 
 	private metadata = {
 		width: 0,
@@ -16,6 +20,7 @@ export class VideoRender {
 		if (this.options.prefix) this.#prefix = this.options.prefix
 
 		this.initDOM()
+		this.initComponents()
 	}
 
 	public setMetaData(meta) {
@@ -29,6 +34,15 @@ export class VideoRender {
 		this.context.drawImage(vf, 0, 0)
 	}
 
+	public setProgress(val1: number, val2: number) {
+		this.progressBar.setProgress(val1, val2)
+	}
+
+	public destroy() {
+
+	}
+
+
 	private initDOM() {
 		const wrap = document.querySelector(this.options.container)
 		if (!wrap) {
@@ -40,6 +54,7 @@ export class VideoRender {
 		wrapper.style.display = 'flex'
 		wrapper.style.justifyContent = 'center'
 		wrapper.style.alignItems = 'center'
+		wrapper.style.position = 'relative'
 		wrapper.style.width = this.options.width
 		wrapper.style.height = this.options.height
 		wrapper.style.background = "black"
@@ -54,8 +69,28 @@ export class VideoRender {
 		this.context = ctx
 		this.canvas = canvas
 
+		const overlay = document.createElement('div')
+		overlay.style.position = 'absolute'
+		overlay.style.height = '100%'
+		overlay.style.left = '20px'
+		overlay.style.right = '20px'
+		overlay.style.top = '10px'
+		overlay.style.bottom = '10px'
+		overlay.style.zIndex = '10'
+		this.overlay = overlay
+
+		this.wrapper.appendChild(overlay)
 		this.wrapper.appendChild(canvas)
 		wrap.appendChild(this.wrapper)
+	}
+
+	private initComponents() {
+		const progressBar = new ProgressBar()
+		progressBar.mount(this.overlay, {
+			"position": "absolute",
+			"bottom": "20px"
+		})
+		this.progressBar = progressBar
 	}
 
 	private adjustCanvas() {

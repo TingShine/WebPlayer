@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom", "ES2022"],
+    "noImplicitAny": true,
+    "module": "ES2020",
+    "target": "es6",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "noEmit": true,
+    "rootDir": "./",
+    "resolveJsonModule": true
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["./finder/**/*.ts"]
+}

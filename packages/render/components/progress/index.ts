@@ -1,11 +1,12 @@
+import EventEmitter from "eventemitter3"
 import { Component } from "../component"
 
 export class ProgressBar extends Component {
   private playerBar: HTMLDivElement
   private  bufferBar: HTMLDivElement
 
-  constructor() {
-    super()
+  constructor(eventEmitter: EventEmitter) {
+    super(eventEmitter)
     this.initDOM()
   }
 

@@ -1,6 +1,9 @@
+import EventEmitter from "eventemitter3"
 
 
 export class Component {
+  constructor(protected eventEmitter: EventEmitter) {}
+
   protected wrapper: HTMLDivElement | null
 
   public mount(dom: HTMLElement, styles: any) {

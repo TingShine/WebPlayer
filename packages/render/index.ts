@@ -1,9 +1,10 @@
+import EventEmitter from "eventemitter3";
 import { PlayButton } from "./components/button";
 import { ProgressBar } from "./components/progress";
 import { TimeComponent } from "./components/time";
 import type { IVideoRenderOptions } from "./type";
 
-export class VideoRender {
+export class VideoRender extends EventEmitter {
 	#prefix = "web-player"
 
 	private wrapper: HTMLDivElement
@@ -22,6 +23,7 @@ export class VideoRender {
 	}
 	
 	constructor(private options: IVideoRenderOptions) {
+		super()
 		if (this.options.prefix) this.#prefix = this.options.prefix
 
 		this.initDOM()
@@ -100,25 +102,25 @@ export class VideoRender {
 	}
 
 	private initComponents() {
-		const progressBar = new ProgressBar()
+		const progressBar = new ProgressBar(this)
 		progressBar.mount(this.overlay, {
 			"position": "absolute",
-			"bottom": "40px"
+			"bottom": "35px"
 		})
 		this.progressBar = progressBar
 
-		const time = new TimeComponent()
+		const time = new TimeComponent(this)
 		time.mount(this.overlay, {
 			"position": "absolute",
-			"bottom": "10px",
-			"left": "18px"
+			"bottom": "5px",
+			"left": "40px"
 		})
 		this.timeDisplay = time
 
-		const playButton = new PlayButton()
+		const playButton = new PlayButton(this)
 		playButton.mount(this.overlay, {
 			"position": "absolute",
-			"bottom": "10px"
+			"bottom": "5px"
 		})
 		this.playButton = playButton
 	}

@@ -18,6 +18,7 @@ export class PlayerManager {
 
 	private hasError: boolean = false
 
+	private firstRendered: boolean = false
 	private duration: number = 0
 	private preRenderState = {
 		time: 0,
@@ -36,6 +37,22 @@ export class PlayerManager {
 		this.fetchAndDemux()
 	}
 
+	public play() {
+		console.log('play');
+		this.render()
+		this.videoRenderControl.emit('api:play')
+	}
+
+	public pause() {
+		if (this.preRenderState.timer) {
+			clearTimeout(this.preRenderState.timer)
+			this.preRenderState.timer = 0
+		}
+		this.preRenderState.time = 0
+		this.preRenderState.duration = 0
+		this.videoRenderControl.emit('api:pause')
+	}
+
 	public destroy() {
 		this.videoRenderControl.destroy()
 		this.demuxer.destroy()
@@ -44,6 +61,8 @@ export class PlayerManager {
 
 	private initUI() {
 		this.videoRenderControl = new VideoRender(this.options)
+		this.videoRenderControl.on('ui:play', () => this.render())
+		this.videoRenderControl.on('ui:pause', () => this.pause())
 	}
 
 	private async fetchAndDemux() {
@@ -77,7 +96,6 @@ export class PlayerManager {
 			})
 
 			this.cursorIndex = 0
-			this.render()
 			this.startDecode()
 		} else {
 			this.hasError = true
@@ -95,8 +113,13 @@ export class PlayerManager {
 	}
 
 	private onFrames(vf: VideoFrame) {
+		if (!this.firstRendered) {
+			this.firstRendered = true
+			this.videoRenderControl.draw(vf)
+		}
 		this.frames.push(vf)
 	}
+	
 
 	private render() {
 		if (this.preRenderState.timer) clearTimeout(this.preRenderState.timer)
@@ -154,6 +177,7 @@ export class PlayerManager {
 				this.preRenderState.timer = setTimeout(() => this.render(), 50)
 			} else {
 				console.log('play ended');
+				this.pause()
 			}
 		}
 	}

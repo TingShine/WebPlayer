@@ -1,7 +1,8 @@
 import mp4box, { AudioTrackOpts, MP4ArrayBuffer, MP4File, MP4Info, MP4Sample, TrakBoxParser, VideoTrackOpts } from 'mp4box'
-import { ExtMP4Sample } from './type'
-import { WebFetcher, IFileReader } from '../fetcher'
-import { MP4DecodeConf } from '../decoder/type'
+import type { ExtMP4Sample } from './type'
+import { WebFetcher } from '../fetcher'
+import type { IFileReader } from '../fetcher'
+import type { MP4DecodeConf } from '../decoder/type'
 
 export async function mp4FileToSamples(fetcher: WebFetcher) {
 	let mp4Info: MP4Info | null = null

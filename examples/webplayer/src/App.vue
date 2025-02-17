@@ -1,26 +1,79 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import { PlayerManager } from '@web-player/base'
 
-onMounted(() => {
-  new PlayerManager({
-    container: '.container',
-    width: '800px',
-    height: '400px',
-    url: 'https://mms.vod.susercontent.com/api/v4/11111000/mms/my-11111000-6ke14-lxtirx2rlojq57.ori.mp4'
-  })
+const playerInstance = ref<PlayerManager>()
+const method = ref('url')
+const url = ref('https://mms.vod.susercontent.com/api/v4/11111000/mms/my-11111000-6ke14-lxtirx2rlojq57.ori.mp4')
+const files = ref<File[]>([])
+
+const handleSubmit = () => {
+  if (playerInstance.value) {
+    playerInstance.value.destroy()
+  }
+
+  if (method.value === 'url') {
+    playerInstance.value = new PlayerManager({
+      container: '.container',
+      width: '800px',
+      height: '400px',
+      input: url.value
+    })
+  } else if (method.value === 'file') {
+    playerInstance.value = new PlayerManager({
+      container: '.container',
+      width: '800px',
+      height: '400px',
+      input: files.value[0]!
+    })
+  }
+}
+ 
+onUnmounted(() => {
+  if (playerInstance.value) {
+    playerInstance.value.destroy()
+  }
 })
 </script>
 
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div style="width: 800px;">
+    <div class="text-4xl mb-20 font-bold">WebCodecs Player</div>
+    <el-form label-width="20%"  label-position="right" class="text-center mb-10">
+      <el-form-item label="Method:">
+        <el-radio-group v-model="method" size="large">
+          <el-radio-button label="URL" value="url" ></el-radio-button>
+          <el-radio-button label="Local File" value="file" ></el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+      
+      <el-form-item v-if="method === 'url'" label="URL:">
+        <el-input v-model="url" placeholder="Please input mp4 file url"></el-input>
+      </el-form-item>
+
+      <el-form-item v-if="method === 'file'"  label="File:">
+        <el-upload
+          ref="upload"
+          class="upload-demo"
+          :limit="1"
+          :auto-upload="true"
+          accept=".mp4,.mov"
+          :before-upload="(file) => {
+            files = [file]
+            return false
+          }"
+        >
+          <template #trigger>
+            <el-button >Select Video</el-button>
+          </template>
+        </el-upload>
+      </el-form-item>
+
+      <el-form-item class="mt-10">
+        <el-button type="primary" :disabled="method === 'url' ? !url : !files.length" @click="handleSubmit">Submit</el-button>
+      </el-form-item>
+    </el-form>
   </div>
   <div class="container"></div>
 </template>

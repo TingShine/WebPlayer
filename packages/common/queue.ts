@@ -46,7 +46,7 @@ export class Queue<T = any> {
 		this.config.onSizeChange?.(1)
 	}
 
-	shift() {
+	shift(): T | null {
 		if (this.#list.length) {
 			const result = this.#list.shift() as T
 			this.config?.onSizeChange?.(-1)

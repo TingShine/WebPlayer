@@ -1,24 +1,12 @@
-import { Component, IStyleMap } from "../component"
+import { Component } from "../component"
 
 export class ProgressBar extends Component {
-  progressBar: HTMLDivElement
-  playerBar: HTMLDivElement
-  bufferBar: HTMLDivElement
+  private playerBar: HTMLDivElement
+  private  bufferBar: HTMLDivElement
 
   constructor() {
     super()
     this.initDOM()
-  }
-
-  public mount(wrap: HTMLElement, styles: CSSStyleDeclaration) {
-    Object.keys(styles).forEach((key) => {
-      this.progressBar.style[key] = styles[key]
-    })
-    wrap.appendChild(this.progressBar)
-  }
-
-  public unmount(wrap: HTMLElement): void {
-    wrap.removeChild(this.progressBar)
   }
 
   private initDOM() {
@@ -44,7 +32,7 @@ export class ProgressBar extends Component {
     bufferBar.style.top = "0"
     bufferBar.style.left = "0"
 
-    this.progressBar =progressBar
+    this.wrapper = progressBar
     this.playerBar = playerBar
     this.bufferBar = bufferBar
 
@@ -61,13 +49,5 @@ export class ProgressBar extends Component {
       this.bufferBar.style.width = `${buffer}%`
       this.bufferBar.style.left = `${progress}%`
     }
-  }
-
-  public destroy() {
-    this.wrapper.removeChild(this.progressBar)
-    this.wrapper = null
-    this.progressBar = null
-    this.playerBar = null
-    this.bufferBar = null
   }
 }

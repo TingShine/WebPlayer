@@ -1,7 +1,7 @@
-import { ExtMP4Sample } from './type'
+import type { ExtMP4Sample } from './type'
 import { WebFetcher } from '../fetcher'
 import { mp4FileToSamples } from './utils'
-import { MP4DecodeConf } from '../decoder/type'
+import type { MP4DecodeConf } from '../decoder/type'
 import { VideoTrackOpts } from 'mp4box'
 
 export class WebDemuxer {

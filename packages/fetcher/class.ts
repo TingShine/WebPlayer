@@ -1,4 +1,4 @@
-import { IFetcherInput } from "./type";
+import type { IFetcherInput } from "./type";
 import { isFile, isURL } from "./utils";
 import { write, file } from 'opfs-tools'
 

@@ -32,12 +32,12 @@ jobs:
       - name: Install and Build
         run: |
           pnpm install
-          pnpm run build:finder
-          cd examples/finder
+          pnpm run build:player
+          cd examples/webplayer
           npm run build
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.2.2
         with:
           access_token: ${{ secrets.GH_TOKEN }}
           branch: gh-pages
-          folder: examples/finder/dist
+          folder: examples/webplayer/dist

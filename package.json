@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev:finder": "pnpm run --filter '@web-player/finder' dev &  pnpm --filter finder-example dev",
-    "build:finder": "pnpm run --filter '@web-player/finder...' --stream  build",
-    "dev:player": "pnpm run --filter '@web-player/base' dev & pnpm run --filter player-example dev",
+    "build:finder": "pnpm run --filter '@web-player/finder' build",
+    "dev:player": "pnpm run --filter '@web-player/base' dev ",
+    "example:player": "pnpm run --filter player-example dev",
+    "build:player": "pnpm run --filter '@web-player/base' build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

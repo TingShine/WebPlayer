@@ -1,5 +1,6 @@
-import { IVideoRenderOptions } from "../render/type";
+import type { IFetcherInput } from "../fetcher";
+import type { IVideoRenderOptions } from "../render/type";
 
 export interface IPlayerManagerOptions extends IVideoRenderOptions {
-	url: string
+	input: IFetcherInput
 }

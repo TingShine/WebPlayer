@@ -1,6 +1,6 @@
-import { ExtMP4Sample } from "../demuxer"
-import { IFileReader } from "../fetcher"
-import { IPlayerManagerOptions } from "./type"
+import type { ExtMP4Sample } from "../demuxer"
+import type { IFileReader } from "../fetcher"
+import type { IPlayerManagerOptions } from "./type"
 
 
 export const videoSamples2Chunks = async (samples: ExtMP4Sample[], reader: IFileReader) => {
@@ -44,8 +44,8 @@ export const videoSamples2Chunks = async (samples: ExtMP4Sample[], reader: IFile
 
 const isString = (s: unknown): s is String => Object.prototype.toString.call(s) === '[object String]'
 export const checkOptions = (options: IPlayerManagerOptions) => {
-	if (!options.url || !isString(options.url)) {
-		throw new Error('Invalid options, url must be a string')
+	if (!options.input) {
+		throw new Error('Invalid options, input must exist')
 	}
 
 	if (!options.container || !isString(options.container)) {

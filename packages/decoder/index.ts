@@ -1,6 +1,6 @@
 
 import { CommonLog } from "../common/log"
-import { OnDecodeError, OnFrame } from "./type"
+import type { OnDecodeError, OnFrame } from "./type"
 
 const log = new CommonLog('WebVideoDecoder')
 export class WebVideoDecoder {
@@ -42,23 +42,11 @@ export class WebVideoDecoder {
 		for (let i = 0; i < chunks.length; i++)
 			this.#decoder.decode(chunks[i])
 
-		// this.#decoder.flush().catch(err => {
-		// 	if (!(err instanceof Error)) throw err;
-		// 	if (
-		// 		err.message.includes('Decoding error') &&
-		// 			this.onDecodeError != null
-		// 	) {
-		// 		this.onDecodeError(err);
-		// 		return;
-		// 	}
-
-		// 	// reset 中断解码器，预期会抛出 AbortedError
-		// 	if (!err.message.includes('Aborted due to close')) {
-		// 		throw err;
-		// 	}
-		// })
-
 		this.#decoding = false
+	}
+
+	public flush() {
+		this.#decoder.flush()
 	}
 
 	public reset() {

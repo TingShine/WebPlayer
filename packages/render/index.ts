@@ -1,5 +1,6 @@
 import { ProgressBar } from "./components/progress";
-import { IVideoRenderOptions } from "./type";
+import { TimeComponent } from "./components/time";
+import type { IVideoRenderOptions } from "./type";
 
 export class VideoRender {
 	#prefix = "web-player"
@@ -13,7 +14,8 @@ export class VideoRender {
 
 	private metadata = {
 		width: 0,
-		height: 0
+		height: 0,
+		duration: 0
 	}
 	
 	constructor(private options: IVideoRenderOptions) {
@@ -23,7 +25,7 @@ export class VideoRender {
 		this.initComponents()
 	}
 
-	public setMetaData(meta) {
+	public setMetaData(meta: any) {
 		this.metadata = { ...this.metadata, ...meta }
 		this.canvas.width = this.metadata.width
 		this.canvas.height = this.metadata.height
@@ -71,26 +73,39 @@ export class VideoRender {
 
 		const overlay = document.createElement('div')
 		overlay.style.position = 'absolute'
-		overlay.style.height = '100%'
 		overlay.style.left = '20px'
 		overlay.style.right = '20px'
 		overlay.style.top = '10px'
 		overlay.style.bottom = '10px'
 		overlay.style.zIndex = '10'
+		overlay.style.visibility = "hidden"
 		this.overlay = overlay
 
 		this.wrapper.appendChild(overlay)
 		this.wrapper.appendChild(canvas)
 		wrap.appendChild(this.wrapper)
+
+		wrapper.addEventListener('mouseover', () => {
+			overlay.style.visibility = "visible"
+		})
+		wrapper.addEventListener("mouseout", () => {
+			overlay.style.visibility = "hidden"
+		})
 	}
 
 	private initComponents() {
 		const progressBar = new ProgressBar()
 		progressBar.mount(this.overlay, {
 			"position": "absolute",
-			"bottom": "20px"
+			"bottom": "40px"
 		})
 		this.progressBar = progressBar
+
+		const time = new TimeComponent()
+		time.mount(this.overlay, {
+			"position": "absolute",
+			"bottom": "10px"
+		})
 	}
 
 	private adjustCanvas() {

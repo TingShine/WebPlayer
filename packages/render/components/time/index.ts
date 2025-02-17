@@ -13,6 +13,15 @@ export class TimeComponent extends Component {
 		this.initDOM()
 	}
 
+	public setDuration(time: number) {
+		this.duration = time
+		this.wrapper.innerText = this.innerText
+	}
+
+	public setCurrentTime(time: number) {
+		this.currentTime = time
+		this.wrapper.innerText = this.innerText
+	}
 
 	private initDOM() {
 		const wrapper = document.createElement('div')

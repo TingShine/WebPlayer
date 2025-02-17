@@ -1,3 +1,4 @@
+import { PlayButton } from "./components/button";
 import { ProgressBar } from "./components/progress";
 import { TimeComponent } from "./components/time";
 import type { IVideoRenderOptions } from "./type";
@@ -11,6 +12,8 @@ export class VideoRender {
 
 	private overlay: HTMLDivElement
 	private progressBar: ProgressBar
+	private timeDisplay: TimeComponent
+	private playButton: PlayButton
 
 	private metadata = {
 		width: 0,
@@ -29,6 +32,7 @@ export class VideoRender {
 		this.metadata = { ...this.metadata, ...meta }
 		this.canvas.width = this.metadata.width
 		this.canvas.height = this.metadata.height
+		this.timeDisplay.setDuration(this.metadata.duration ?? 0)
 		this.adjustCanvas()
 	}
 
@@ -37,7 +41,9 @@ export class VideoRender {
 	}
 
 	public setProgress(val1: number, val2: number) {
+		const currentTime = this.metadata.duration * val1 / 100
 		this.progressBar.setProgress(val1, val2)
+		this.timeDisplay.setCurrentTime(currentTime)
 	}
 
 	public destroy() {
@@ -104,8 +110,17 @@ export class VideoRender {
 		const time = new TimeComponent()
 		time.mount(this.overlay, {
 			"position": "absolute",
+			"bottom": "10px",
+			"left": "18px"
+		})
+		this.timeDisplay = time
+
+		const playButton = new PlayButton()
+		playButton.mount(this.overlay, {
+			"position": "absolute",
 			"bottom": "10px"
 		})
+		this.playButton = playButton
 	}
 
 	private adjustCanvas() {

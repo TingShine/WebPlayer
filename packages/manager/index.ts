@@ -58,7 +58,7 @@ export class PlayerManager {
 			}
 
 			const { width, height, duration } = vt
-			this.videoRenderControl.setMetaData({ width, height })
+			this.videoRenderControl.setMetaData({ width, height, duration: duration / 1e3 })
 			this.duration = duration / 1e3
 
 			this.initDecoder()
@@ -167,7 +167,7 @@ export class PlayerManager {
 		const timestamp = frame.timestamp / 1e3
 		const lastFrame = this.frames.at(0)
 		const firstFrame = this.frames.at(-1)
-		this.videoRenderControl.setProgress(timestamp / (this.duration ?? 1) * 100, lastFrame && firstFrame ? ((firstFrame.timestamp - lastFrame.timestamp) / 1e3 / this.duration * 100) : 0)
+		this.videoRenderControl.setProgress((timestamp + frame.duration / 1e3) / (this.duration ?? 1) * 100, lastFrame && firstFrame ? ((firstFrame.timestamp - lastFrame.timestamp + lastFrame.duration) / 1e3 / this.duration * 100) : 0)
 		frame.close()
 
 		if (this.frames.length <= BUFFER_NEED_DECODE_FRAMES) {

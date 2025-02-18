@@ -50,7 +50,7 @@ export class SyncManger extends EventEmitter {
 
 	private register() {
 		Object.keys(this.syncMap).forEach((key: keyof ISyncParams) => {
-			if (key !== 'userEventEmitter' && key !== 'videoRender')
+			if (key !== 'userEventEmitter')
 				this.syncMap[key]?.register(this)
 		})
 	}
@@ -58,6 +58,7 @@ export class SyncManger extends EventEmitter {
 	private initEvent() {
 		this.on("ui:play", this.play.bind(this))
 		this.on("ui:pause", this.pause.bind(this))
+		this.on("ui:overlay-click", this.onOverlayClick.bind(this))
 		this.on("canplay", this.onCanPlay.bind(this))
 		this.on("ended", this.onEnded.bind(this))
 		this.on("metadata", this.onMetaData.bind(this))
@@ -68,11 +69,13 @@ export class SyncManger extends EventEmitter {
 			this.syncMap.manager.reset()
 		}
 
+		this.state.playing = true
 		this.syncMap.manager.play()
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.PLAY)
 	}
 
 	private pause() {
+		this.state.playing = false
 		this.syncMap.manager.pause()
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.PAUSE)
 	}
@@ -91,5 +94,9 @@ export class SyncManger extends EventEmitter {
 	private onCanPlay(vf: VideoFrame) {
 		this.syncMap.videoRender.draw(vf)
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.CANPLAY)
+	}
+
+	private onOverlayClick() {
+		this.syncMap.playButton.toggle()
 	}
 }

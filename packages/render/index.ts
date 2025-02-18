@@ -1,5 +1,5 @@
 import type { IVideoRenderOptions } from "./type";
-
+import EventEmitter from 'eventemitter3'
 export class VideoRender {
 	#prefix = "web-player"
 
@@ -8,6 +8,8 @@ export class VideoRender {
 	private context: CanvasRenderingContext2D
 
 	public overlay: HTMLDivElement
+
+	private eventEmitter: EventEmitter | null = null
 
 	private metadata = {
 		width: 0,
@@ -35,6 +37,10 @@ export class VideoRender {
 
 	public destroy() {
 
+	}
+
+	public register(event: EventEmitter) {
+		this.eventEmitter = event
 	}
 
 	private initDOM() {
@@ -82,6 +88,10 @@ export class VideoRender {
 		})
 		wrapper.addEventListener("mouseout", () => {
 			overlay.style.visibility = "hidden"
+		})
+		overlay.addEventListener("click", (e) => {
+			e.preventDefault()
+			this.eventEmitter?.emit("ui:overlay-click")
 		})
 	}
 

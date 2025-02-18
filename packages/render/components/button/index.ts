@@ -26,6 +26,12 @@ export class PlayButton extends Component {
 		this.wrapper.innerHTML = PLAY_SVG
 	}
 
+	public toggle() {
+		this.eventEmitter?.emit(this.state === "Playing" ? "ui:pause" : 'ui:play')
+		this.wrapper.innerHTML = this.state === "Playing" ? PLAY_SVG : PAUSE_SVG
+		this.state = this.state === "Playing" ? "Pause" : "Playing"
+	}
+
 	private initDOM() {
 		const wrapper = document.createElement('div')
 		wrapper.style.width = "24px"
@@ -38,10 +44,10 @@ export class PlayButton extends Component {
 	}
 
 	private initEvent() {
-		this.wrapper.addEventListener('click', () => {
-			this.eventEmitter?.emit(this.state === "Playing" ? "ui:pause" : 'ui:play')
-			this.wrapper.innerHTML = this.state === "Playing" ? PLAY_SVG : PAUSE_SVG
-			this.state = this.state === "Playing" ? "Pause" : "Playing"
+		this.wrapper.addEventListener('click', (e) => {
+			e.preventDefault()
+			e.stopPropagation()
+			this.toggle()
 		})
 	}
 }

@@ -1,4 +1,3 @@
-import EventEmitter from "eventemitter3";
 import { Component } from "../component";
 
 const PLAY_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F3F3F3"><path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z"/></svg>`
@@ -7,8 +6,8 @@ const PAUSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox
 export class PlayButton extends Component {
 	private state: 'Playing' | 'Pause' = 'Pause'
 
-	constructor(eventEmitter: EventEmitter) {
-		super(eventEmitter)
+	constructor() {
+		super()
 		this.initDOM()
 		this.initEvent()
 	}
@@ -16,12 +15,14 @@ export class PlayButton extends Component {
 	public play() {
 		if (this.state === 'Playing') return
 
+		this.state = 'Playing'
 		this.wrapper.innerHTML = PAUSE_SVG
 	}
 
 	public pause() {
 		if (this.state === 'Pause') return
 
+		this.state = 'Pause'
 		this.wrapper.innerHTML = PLAY_SVG
 	}
 
@@ -38,15 +39,9 @@ export class PlayButton extends Component {
 
 	private initEvent() {
 		this.wrapper.addEventListener('click', () => {
-			this.eventEmitter.emit(this.state === "Playing" ? "ui:pause" : 'ui:play')
+			this.eventEmitter?.emit(this.state === "Playing" ? "ui:pause" : 'ui:play')
 			this.wrapper.innerHTML = this.state === "Playing" ? PLAY_SVG : PAUSE_SVG
 			this.state = this.state === "Playing" ? "Pause" : "Playing"
-		})
-		this.eventEmitter.on("api:play", () => {
-			this.play()
-		})
-		this.eventEmitter.on("api:pause", () => {
-			this.pause()
 		})
 	}
 }

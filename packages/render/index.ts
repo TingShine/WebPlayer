@@ -1,40 +1,30 @@
-import EventEmitter from "eventemitter3";
-import { PlayButton } from "./components/button";
-import { ProgressBar } from "./components/progress";
-import { TimeComponent } from "./components/time";
 import type { IVideoRenderOptions } from "./type";
 
-export class VideoRender extends EventEmitter {
+export class VideoRender {
 	#prefix = "web-player"
 
 	private wrapper: HTMLDivElement
 	private canvas: HTMLCanvasElement
 	private context: CanvasRenderingContext2D
 
-	private overlay: HTMLDivElement
-	private progressBar: ProgressBar
-	private timeDisplay: TimeComponent
-	private playButton: PlayButton
+	public overlay: HTMLDivElement
 
 	private metadata = {
 		width: 0,
 		height: 0,
 		duration: 0
 	}
-	
+
 	constructor(private options: IVideoRenderOptions) {
-		super()
 		if (this.options.prefix) this.#prefix = this.options.prefix
 
 		this.initDOM()
-		this.initComponents()
 	}
 
 	public setMetaData(meta: any) {
 		this.metadata = { ...this.metadata, ...meta }
 		this.canvas.width = this.metadata.width
 		this.canvas.height = this.metadata.height
-		this.timeDisplay.setDuration(this.metadata.duration ?? 0)
 		this.adjustCanvas()
 	}
 
@@ -42,16 +32,10 @@ export class VideoRender extends EventEmitter {
 		this.context.drawImage(vf, 0, 0)
 	}
 
-	public setProgress(val1: number, val2: number) {
-		const currentTime = this.metadata.duration * val1 / 100
-		this.progressBar.setProgress(val1, val2)
-		this.timeDisplay.setCurrentTime(currentTime)
-	}
 
 	public destroy() {
 
 	}
-
 
 	private initDOM() {
 		const wrap = document.querySelector(this.options.container)
@@ -99,30 +83,6 @@ export class VideoRender extends EventEmitter {
 		wrapper.addEventListener("mouseout", () => {
 			overlay.style.visibility = "hidden"
 		})
-	}
-
-	private initComponents() {
-		const progressBar = new ProgressBar(this)
-		progressBar.mount(this.overlay, {
-			"position": "absolute",
-			"bottom": "35px"
-		})
-		this.progressBar = progressBar
-
-		const time = new TimeComponent(this)
-		time.mount(this.overlay, {
-			"position": "absolute",
-			"bottom": "5px",
-			"left": "40px"
-		})
-		this.timeDisplay = time
-
-		const playButton = new PlayButton(this)
-		playButton.mount(this.overlay, {
-			"position": "absolute",
-			"bottom": "5px"
-		})
-		this.playButton = playButton
 	}
 
 	private adjustCanvas() {

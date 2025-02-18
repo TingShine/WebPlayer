@@ -1,12 +1,11 @@
-import EventEmitter from "eventemitter3"
 import { Component } from "../component"
 
 export class ProgressBar extends Component {
   private playerBar: HTMLDivElement
   private  bufferBar: HTMLDivElement
 
-  constructor(eventEmitter: EventEmitter) {
-    super(eventEmitter)
+  constructor() {
+    super()
     this.initDOM()
   }
 
@@ -41,14 +40,16 @@ export class ProgressBar extends Component {
     progressBar.appendChild(bufferBar)
   }
 
-  setProgress(progress: number, buffer: number) {
+  setProgress(progress: number) {
     if (this.playerBar) {
       this.playerBar.style.width = `${progress}%`
-    }
-
-    if (this.bufferBar) {
-      this.bufferBar.style.width = `${buffer}%`
       this.bufferBar.style.left = `${progress}%`
+    }
+  }
+
+  setBufferProgress(ratio: number) {
+    if (this.bufferBar) {
+      this.bufferBar.style.width = `${ratio}%`
     }
   }
 }

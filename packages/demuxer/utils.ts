@@ -34,9 +34,7 @@ export async function mp4FileToSamples(fetcher: WebFetcher) {
 			}
 		}
 	)
-
-	await reader.close()
-
+ 
 	const lastSample = videoSamples.at(-1)
 	if (mp4Info == null) {
 		throw new Error('Stream is done, but not emit ready')

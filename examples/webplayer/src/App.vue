@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue';
-import { PlayerManager } from '@web-player/base'
+import { WebPlayer } from '@web-player/base'
+import { PlayerEventEnum } from '@web-player/base';
 
-const playerInstance = ref<PlayerManager>()
+const playerInstance = ref<WebPlayer>()
 const method = ref('url')
 const url = ref('https://mms.vod.susercontent.com/api/v4/11111000/mms/my-11111000-6ke14-lxtirx2rlojq57.ori.mp4')
 const files = ref<File[]>([])
@@ -12,21 +13,27 @@ const handleSubmit = () => {
     playerInstance.value.destroy()
   }
 
+  const start = performance.now()
   if (method.value === 'url') {
-    playerInstance.value = new PlayerManager({
+    playerInstance.value = new WebPlayer({
       container: '.container',
       width: '800px',
       height: '400px',
       input: url.value
     })
-  } else if (method.value === 'file') {
-    playerInstance.value = new PlayerManager({
+  } else {
+    playerInstance.value = new WebPlayer({
       container: '.container',
       width: '800px',
       height: '400px',
       input: files.value[0]!
     })
   }
+
+  playerInstance.value.addEventListener(PlayerEventEnum.CANPLAY, () => {
+    const cost = performance.now() - start
+    console.log('Video can play cost: ' + cost + " ms");
+  })
 }
  
 onUnmounted(() => {

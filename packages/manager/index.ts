@@ -1,4 +1,3 @@
-import { VideoRender } from "../render";
 import type { IPlayerManagerOptions } from "./type";
 import { WebFetcher } from '../fetcher'
 import { WebDemuxer } from '../demuxer'
@@ -6,9 +5,13 @@ import { WebVideoDecoder } from '../decoder'
 import { checkOptions, videoSamples2Chunks } from "./utils";
 import { Queue } from '../common/queue'
 import { BUFFER_DECODE_FRAMES, BUFFER_FRAMES, BUFFER_MAX_FRAMES, BUFFER_NEED_DECODE_FRAMES } from "./constants";
+import { SyncManger } from "../sync";
 
+/** 管理视频获取，解封装和解码
+ * 
+ * TODO: 迁移到worker
+ */
 export class PlayerManager {
-	private videoRenderControl: VideoRender
 	private fetcher: WebFetcher = new WebFetcher()
 	private demuxer: WebDemuxer = new WebDemuxer()
 	private decoder: WebVideoDecoder | null = null
@@ -18,29 +21,27 @@ export class PlayerManager {
 
 	private hasError: boolean = false
 
-	private firstRendered: boolean = false
+	private firstRendered: boolean = true
 	private duration: number = 0
 	private preRenderState = {
 		time: 0,
 		duration: 0,
 		timer: 0
 	}
+	private syncManger: SyncManger | null = null
 
-	private get isPlayEnd () {
+	public get isPlayEnd () {
 		return this.cursorIndex >= this.demuxer.videoSamples.length && this.decoder.decodeQueueSize === 0
 	}
 
 	constructor(private options: IPlayerManagerOptions) {
 		checkOptions(options)
-
-		this.initUI()
 		this.fetchAndDemux()
+		this.bindEvent()
 	}
 
 	public play() {
-		console.log('play');
 		this.render()
-		this.videoRenderControl.emit('api:play')
 	}
 
 	public pause() {
@@ -50,19 +51,25 @@ export class PlayerManager {
 		}
 		this.preRenderState.time = 0
 		this.preRenderState.duration = 0
-		this.videoRenderControl.emit('api:pause')
 	}
 
 	public destroy() {
-		this.videoRenderControl.destroy()
 		this.demuxer.destroy()
 		this.fetcher.destroy()
+		this.decoder?.destroy()
 	}
 
-	private initUI() {
-		this.videoRenderControl = new VideoRender(this.options)
-		this.videoRenderControl.on('ui:play', () => this.render())
-		this.videoRenderControl.on('ui:pause', () => this.pause())
+	public register(syncManger: SyncManger) {
+		this.syncManger = syncManger
+	}
+
+	public reset() {
+		if (this.preRenderState.timer) clearTimeout(this.preRenderState.timer)
+		
+		this.preRenderState = { time: 0, duration: 0, timer: 0 }
+		this.cursorIndex = 0
+		this.frames.clear()
+		this.startDecode()
 	}
 
 	private async fetchAndDemux() {
@@ -77,7 +84,8 @@ export class PlayerManager {
 			}
 
 			const { width, height, duration } = vt
-			this.videoRenderControl.setMetaData({ width, height, duration: duration / 1e3 })
+			const meta = ({ width, height, duration: duration / 1e3 })
+			this.syncManger.emit('metadata', meta)
 			this.duration = duration / 1e3
 
 			this.initDecoder()
@@ -113,17 +121,12 @@ export class PlayerManager {
 	}
 
 	private onFrames(vf: VideoFrame) {
-		if (!this.firstRendered) {
-			this.firstRendered = true
-			this.videoRenderControl.draw(vf)
-		}
 		this.frames.push(vf)
 	}
-	
 
 	private render() {
 		if (this.preRenderState.timer) clearTimeout(this.preRenderState.timer)
-		
+
 		const vf = this.frames.shift()
 		if (vf) {
 			const duration = vf.duration / 1e3
@@ -176,6 +179,7 @@ export class PlayerManager {
 				this.startDecode()
 				this.preRenderState.timer = setTimeout(() => this.render(), 50)
 			} else {
+				this.syncManger.emit('ended')
 				console.log('play ended');
 				this.pause()
 			}
@@ -185,17 +189,32 @@ export class PlayerManager {
 	private drawFrame(frame: VideoFrame, delay: number) {
 		this.preRenderState.time = performance.now()
 		this.preRenderState.duration = frame.duration / 1e3
-		this.videoRenderControl.draw(frame)
+		this.syncManger?.draw(frame)
 		this.preRenderState.timer = setTimeout(() => this.render(), delay)
 
 		const timestamp = frame.timestamp / 1e3
-		const lastFrame = this.frames.at(0)
-		const firstFrame = this.frames.at(-1)
-		this.videoRenderControl.setProgress((timestamp + frame.duration / 1e3) / (this.duration ?? 1) * 100, lastFrame && firstFrame ? ((firstFrame.timestamp - lastFrame.timestamp + lastFrame.duration) / 1e3 / this.duration * 100) : 0)
+		this.syncManger.setProgress((timestamp + frame.duration / 1e3) / (this.duration ?? 1) * 100)
 		frame.close()
 
 		if (this.frames.length <= BUFFER_NEED_DECODE_FRAMES) {
 			this.startDecode()
 		}
+	}
+
+	private bindEvent() {
+		this.frames.setSizeChangeCallback(() => {
+			if (this.firstRendered && (this.frames.length >= 20 || (this.frames.length >= 10 && this.decoder.decodeQueueSize >= 10))) {
+				this.firstRendered = false
+				this.syncManger?.emit('canplay', this.frames.at(0).clone())
+			}
+
+			const lastFrame = this.frames.at(0)
+			const firstFrame = this.frames.at(-1)
+			if (firstFrame && lastFrame) {
+				this.syncManger.setBufferProgress((firstFrame.timestamp - lastFrame.timestamp + firstFrame.duration) / 1e3 / this.duration * 100)
+			} else {
+				this.syncManger.setBufferProgress(0)
+			}
+		})
 	}
 }

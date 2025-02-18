@@ -1,8 +1,7 @@
 import EventEmitter from "eventemitter3"
 
-
 export class Component {
-  constructor(protected eventEmitter: EventEmitter) {}
+  protected eventEmitter: EventEmitter | null = null
 
   protected wrapper: HTMLDivElement | null
 
@@ -21,6 +20,10 @@ export class Component {
       dom.removeChild(this.wrapper)
       this.destroy()
     }
+  }
+
+  public register(eventEmitter: EventEmitter) {
+    this.eventEmitter = eventEmitter
   }
 
   public destroy() {

@@ -5,36 +5,50 @@ import { write, file } from 'opfs-tools'
 const getID = () => +new Date()
 
 export class WebFetcher {
-	#localFile = `codecs-temp-dir/file_${getID()}`
+	private localFile = `codecs-temp-dir/file_${getID()}`
+	private reader: {
+    read: (size: number, opts?: {
+        at?: number;
+    }) => Promise<ArrayBuffer>;
+    getSize: () => Promise<number>;
+    close: () => Promise<void>;
+} | null = null
 	public loaded = false
 
 	public async load (input: IFetcherInput): Promise<string> {
 		if (this.loaded) throw new Error('WebFetcher can only load once, please invoke `destroy` method if reuse the instance')
-		
+		 
 		if (isURL(input)) {
-			await write(this.#localFile, await this.fetchRemoteURL(input))
+			await write(this.localFile, await this.fetchRemoteURL(input))
 		} else if (isFile(input)) {
-			await write(this.#localFile, this.getLocalFileStream(input))
+			await write(this.localFile, this.getLocalFileStream(input))
 		} else if (input instanceof ReadableStream) {
-			await write(this.#localFile, input)
+			await write(this.localFile, input)
 		} else {
 			throw new Error('Invalid input format, only receive url, file or readablestream')
 		}
 
 		this.loaded = true
-		return this.#localFile
+		return this.localFile
 	}
 
 	public async getReader () {
 		if (!this.loaded) throw new Error('The instance has not loaded file')
+		if (this.reader) return this.reader
 
-		return await file(this.#localFile).createReader()
+		this.reader = await file(this.localFile).createReader()
+		return this.reader
 	}
-
+ 
 	public async destroy() {
-		if (this.loaded) await file(this.#localFile).remove()
+		if (this.loaded && this.reader) { 
+			await this.reader.close()
+			await file(this.localFile).remove()
+		}
+
 		this.loaded = false
-		this.#localFile = `codecs-temp-dir/file_${getID()}`
+		this.reader = null
+		this.localFile = `codecs-temp-dir/file_${getID()}`
 	}
 
 	private fetchRemoteURL (url: string) {

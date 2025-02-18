@@ -1,4 +1,3 @@
-import EventEmitter from "eventemitter3";
 import { Component } from "../component";
 
 export class TimeComponent extends Component {
@@ -9,8 +8,8 @@ export class TimeComponent extends Component {
 		return `${formatTime(this.currentTime)} / ${formatTime(this.duration)}`
 	}
 
-	constructor(eventEmitter: EventEmitter) {
-		super(eventEmitter)
+	constructor() {
+		super()
 		this.initDOM()
 	}
 

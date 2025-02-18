@@ -87,6 +87,7 @@ export class SyncManger extends EventEmitter {
 	}
 
 	private onEnded() {
+		this.setProgress(100)
 		this.syncMap.playButton.pause()
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.ENDED)
 	}

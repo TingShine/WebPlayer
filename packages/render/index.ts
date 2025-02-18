@@ -36,7 +36,14 @@ export class VideoRender {
 
 
 	public destroy() {
+		if (!this.wrapper) return
 
+		const wrap = document.querySelector(this.options.container)
+		if (wrap) {
+			wrap.removeChild(this.wrapper)
+			this.wrapper = null
+			this.overlay = null
+		}
 	}
 
 	public register(event: EventEmitter) {

@@ -50,6 +50,7 @@ export class WebPlayer {
 	public destroy() {
 		this.eventEmitter.removeAllListeners()
 		this.manager.destroy()
+		this.videoRender.destroy()
 	}
 
 	public addEventListener(event: PlayerEventEnum, callback: (...args: any[]) => void) {

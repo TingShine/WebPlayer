@@ -39,7 +39,7 @@ export class WebPlayer {
 			"position": "absolute",
 			"bottom": "50%",
 			"left": "50%",
-			"transform": "translateX(-50%)",
+			"transform": "translate3d(-50%, -50%, 0)",
 		})
 		this.syncManger = new SyncManger({
 			userEventEmitter: this.eventEmitter,

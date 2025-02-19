@@ -2,7 +2,7 @@ import type { IPlayerManagerOptions } from "./type";
 import { WebFetcher } from '../fetcher'
 import { WebDemuxer } from '../demuxer'
 import { WebVideoDecoder } from '../decoder'
-import { checkOptions, videoSamples2Chunks } from "./utils";
+import { checkOptions, findSampleByTimestamp, videoSamples2Chunks } from "./utils";
 import { Queue } from '../common/queue'
 import { BUFFER_DECODE_FRAMES, BUFFER_FRAMES, BUFFER_MAX_FRAMES, BUFFER_NEED_DECODE_FRAMES } from "./constants";
 import { SyncManger } from "../sync";
@@ -30,6 +30,11 @@ export class PlayerManager {
 	}
 	private syncManger: SyncManger | null = null
 
+	private state = {
+		seeking: false,
+		seekTimestamp: 0
+	}
+
 	public get isPlayEnd () {
 		return this.cursorIndex >= this.demuxer.videoSamples.length && this.decoder.decodeQueueSize === 0
 	}
@@ -53,6 +58,42 @@ export class PlayerManager {
 		this.preRenderState.duration = 0
 	}
 
+	public async seek(timestamp: number) {
+		this.pause()
+		
+		if (this.frames.length) {
+			const firstFrame = this.frames.at(0)
+			const lastFrame = this.frames.at(-1)
+
+			// 在缓冲区间seek，抛弃部分帧
+			if (firstFrame && lastFrame && timestamp >= firstFrame.timestamp / 1e3 && timestamp <= lastFrame.timestamp / 1e3) {
+				while (this.frames.length) {
+					const frame = this.frames.shift()
+					if (timestamp > frame.timestamp / 1e3) {
+						frame.close()
+					} else {
+						this.syncManger.emit("seeked", frame)
+						this.startDecode()
+						return
+					}
+				}
+			}
+		}
+
+		// 范畴之外，找到最近的IDR帧开始解码
+		await this.decoder.flush()
+		while (this.frames.length) {
+			const vf = this.frames.pop()
+			vf.close()
+		}
+		this.state.seeking = true
+		this.state.seekTimestamp = timestamp * 1e3
+		const { idrIndex, index } = findSampleByTimestamp(this.demuxer.videoSamples, timestamp * 1e3)
+		this.cursorIndex = index + BUFFER_NEED_DECODE_FRAMES
+		const chunks = await videoSamples2Chunks(this.demuxer.videoSamples.slice(idrIndex, this.cursorIndex), await this.fetcher.getReader())
+		this.decoder.decode(chunks)
+	}
+
 	public destroy() {
 		this.demuxer.destroy()
 		this.fetcher.destroy()
@@ -68,7 +109,10 @@ export class PlayerManager {
 		
 		this.preRenderState = { time: 0, duration: 0, timer: 0 }
 		this.cursorIndex = 0
-		this.frames.clear()
+		while (this.frames.length) {
+			const vf = this.frames.pop()
+			vf.close()
+		}
 		this.startDecode()
 	}
 
@@ -208,6 +252,19 @@ export class PlayerManager {
 				this.syncManger?.emit('canplay', this.frames.at(0).clone())
 			}
 
+			if (this.state.seeking && this.frames.length) {
+				const frame = this.frames.at(0)!
+				if (frame.timestamp < this.state.seekTimestamp) {
+					const vf = this.frames.shift()
+					vf.close()
+					return
+				}
+
+				this.state.seeking = false
+				this.state.seekTimestamp = 0
+				this.syncManger?.emit('seeked', this.frames.at(0).clone())
+			}
+
 			const lastFrame = this.frames.at(0)
 			const firstFrame = this.frames.at(-1)
 			if (firstFrame && lastFrame) {
@@ -216,5 +273,7 @@ export class PlayerManager {
 				this.syncManger.setBufferProgress(0)
 			}
 		})
+
+		
 	}
 }

@@ -56,6 +56,17 @@ export const checkOptions = (options: IPlayerManagerOptions) => {
 	if (!dom) throw new Error('Invalid options, container must be a DOM element')
 }
 
-export const calculateFPS = () => {
-	
+export const findSampleByTimestamp = (samples: ExtMP4Sample[], timestamp: number) => {
+	let idrIndex = -1
+	let index = -1
+	while (++index < samples.length) {
+		const s = samples[index]
+		if (s.is_idr) idrIndex = index
+		if (s.cts > timestamp) break
+	}
+
+	return {
+		idrIndex: idrIndex,
+		index: index
+	}
 }

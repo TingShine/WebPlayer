@@ -46,7 +46,7 @@ export class WebVideoDecoder {
 	}
 
 	public flush() {
-		this.decoder.flush()
+		return this.decoder.flush()
 	}
 
 	public destroy() {

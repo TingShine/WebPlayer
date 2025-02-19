@@ -26,7 +26,8 @@ export class SyncManger extends EventEmitter {
 	private state = {
 		playing: false,
 		loading: true,
-		ended: false
+		ended: false,
+		seeking: false,
 	}
 
 	constructor(private syncMap: ISyncParams) {
@@ -37,6 +38,7 @@ export class SyncManger extends EventEmitter {
 
 	public draw(vf: VideoFrame) {
 		this.syncMap.videoRender.draw(vf)
+		vf.close()
 	}
 
 	public setProgress(ratio: number) {
@@ -59,22 +61,29 @@ export class SyncManger extends EventEmitter {
 		this.on("ui:play", this.play.bind(this))
 		this.on("ui:pause", this.pause.bind(this))
 		this.on("ui:overlay-click", this.onOverlayClick.bind(this))
+		this.on("ui:progress", this.onProgress.bind(this))
 		this.on("canplay", this.onCanPlay.bind(this))
 		this.on("ended", this.onEnded.bind(this))
 		this.on("metadata", this.onMetaData.bind(this))
+		this.on("seeked", this.onSeeked.bind(this))
 	}
 
 	private play() {
+		if (this.state.loading) return
+
 		if (this.syncMap.manager.isPlayEnd) {
 			this.syncMap.manager.reset()
 		}
 
+		this.state.ended = false
 		this.state.playing = true
 		this.syncMap.manager.play()
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.PLAY)
 	}
 
 	private pause() {
+		if (this.state.loading) return
+
 		this.state.playing = false
 		this.syncMap.manager.pause()
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.PAUSE)
@@ -88,16 +97,42 @@ export class SyncManger extends EventEmitter {
 
 	private onEnded() {
 		this.setProgress(100)
+		this.setBufferProgress(0)
+		this.state.playing = false
+		this.state.ended = true
 		this.syncMap.playButton.pause()
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.ENDED)
 	}
 
 	private onCanPlay(vf: VideoFrame) {
+		this.state.loading = false
 		this.syncMap.videoRender.draw(vf)
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.CANPLAY)
 	}
 
 	private onOverlayClick() {
+		if (this.state.loading) return
+
 		this.syncMap.playButton.toggle()
+	}
+
+	private async onProgress(ratio: number) {
+		if (this.state.loading) return
+
+		const timestamp = ratio * this.metadata.duration
+		this.syncMap.userEventEmitter.emit(PlayerEventEnum.SEEKING, timestamp)
+		this.state.seeking = true
+		this.syncMap.manager.seek(timestamp)
+	}
+
+	private onSeeked(vf: VideoFrame) {
+		this.draw(vf)
+		this.setProgress(vf.timestamp / (this.metadata.duration * 1e3) * 100)
+		this.state.seeking = false
+		this.syncMap.userEventEmitter.emit(PlayerEventEnum.SEEKED, vf.timestamp)
+
+		if (this.state.playing) {
+			this.syncMap.manager.play()
+		}
 	}
 }

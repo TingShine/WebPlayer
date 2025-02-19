@@ -7,14 +7,29 @@ export class ProgressBar extends Component {
   constructor() {
     super()
     this.initDOM()
+    this.initEvent()
+  }
+
+  setProgress(progress: number) {
+    if (this.playerBar) {
+      this.playerBar.style.width = `${progress}%`
+      this.bufferBar.style.left = `${progress}%`
+    }
+  }
+
+  setBufferProgress(ratio: number) {
+    if (this.bufferBar) {
+      this.bufferBar.style.width = `${ratio}%`
+    }
   }
 
   private initDOM() {
     const progressBar = document.createElement('div')
     progressBar.style.width = "100%"
-    progressBar.style.height = "4px"
+    progressBar.style.height = "3px"
     progressBar.style.backgroundColor = "#555"
     progressBar.style.position = "relative"
+    progressBar.style.cursor = "pointer"
 
     const playerBar = document.createElement('div')
     playerBar.style.width = "0"
@@ -40,16 +55,23 @@ export class ProgressBar extends Component {
     progressBar.appendChild(bufferBar)
   }
 
-  setProgress(progress: number) {
-    if (this.playerBar) {
-      this.playerBar.style.width = `${progress}%`
-      this.bufferBar.style.left = `${progress}%`
-    }
-  }
+  private initEvent() {
+    this.wrapper.addEventListener("mouseover", () => {
+      this.wrapper.style.height = '5px'
+    })
 
-  setBufferProgress(ratio: number) {
-    if (this.bufferBar) {
-      this.bufferBar.style.width = `${ratio}%`
-    }
+    this.wrapper.addEventListener("mouseleave", () => {
+      this.wrapper.style.height = '3px'
+    })
+
+    this.wrapper.addEventListener("click", (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      
+      const rect = this.wrapper.getBoundingClientRect()
+      const x = e.clientX
+      const ratio = (x - rect.x) / rect.width
+      this.eventEmitter.emit("ui:progress", ratio)
+    })
   }
 }

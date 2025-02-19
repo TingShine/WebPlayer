@@ -47,6 +47,8 @@ export class WebPlayer {
 
 	public pause() {}
 
+	public seek(timestamp: number) {}
+
 	public destroy() {
 		this.eventEmitter.removeAllListeners()
 		this.manager.destroy()

@@ -3,6 +3,8 @@ import { onUnmounted, ref } from 'vue';
 import { WebPlayer } from '@web-player/base'
 import { PlayerEventEnum } from '@web-player/base';
 
+import "@web-player/base/dist/index.css"
+
 const playerInstance = ref<WebPlayer>()
 const method = ref('url')
 const url = ref('https://mms.vod.susercontent.com/api/v4/11111000/mms/my-11111000-6ke14-lxtirx2rlojq57.ori.mp4')

@@ -5,6 +5,7 @@ import { ProgressBar } from '../render/components/progress'
 import { PlayButton } from '../render/components/button'
 import { TimeComponent } from '../render/components/time'
 import { VideoRender } from '../render'
+import { LoadingIcon } from '../render/components/loading'
 
 interface ISyncParams{
 	userEventEmitter: EventEmitter<PlayerEventEnum>
@@ -13,6 +14,7 @@ interface ISyncParams{
 	progress: ProgressBar
 	playButton: PlayButton
 	timeDisplay: TimeComponent
+	loadingIcon: LoadingIcon
 }
 
 /** 同步事件，以便兼容worker */
@@ -52,7 +54,7 @@ export class SyncManger extends EventEmitter {
 
 	private register() {
 		Object.keys(this.syncMap).forEach((key: keyof ISyncParams) => {
-			if (key !== 'userEventEmitter')
+			if (key !== 'userEventEmitter' && key !== 'loadingIcon')
 				this.syncMap[key]?.register(this)
 		})
 	}
@@ -106,6 +108,7 @@ export class SyncManger extends EventEmitter {
 
 	private onCanPlay(vf: VideoFrame) {
 		this.state.loading = false
+		this.syncMap.loadingIcon.destroy()
 		this.syncMap.videoRender.draw(vf)
 		this.syncMap.userEventEmitter.emit(PlayerEventEnum.CANPLAY)
 	}

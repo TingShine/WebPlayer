@@ -3,7 +3,7 @@ import EventEmitter from 'eventemitter3'
 export class VideoRender {
 	#prefix = "web-player"
 
-	private wrapper: HTMLDivElement
+	public wrapper: HTMLDivElement
 	private canvas: HTMLCanvasElement
 	private context: CanvasRenderingContext2D
 
@@ -38,12 +38,9 @@ export class VideoRender {
 	public destroy() {
 		if (!this.wrapper) return
 
-		const wrap = document.querySelector(this.options.container)
-		if (wrap) {
-			wrap.removeChild(this.wrapper)
-			this.wrapper = null
-			this.overlay = null
-		}
+		this.wrapper.remove()
+		this.wrapper = null
+		this.overlay = null
 	}
 
 	public register(event: EventEmitter) {

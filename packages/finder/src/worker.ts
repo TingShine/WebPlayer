@@ -1,5 +1,5 @@
 
-import { IFetcherInput } from '../../fetcher/type'
+import type { IFetcherInput } from '../../fetcher/type'
 import { CodecsExtractFrameModule } from './classes'
 import { WorkerEventEnum } from './constants'
 

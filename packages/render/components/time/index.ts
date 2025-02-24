@@ -1,8 +1,8 @@
 import { Component } from "../component";
 
 export class TimeComponent extends Component {
-	private duration: number = 0
-	private currentTime: number = 0
+	private duration = 0
+	private currentTime = 0
 
 	private get innerText() {
 		return `${formatTime(this.currentTime)} / ${formatTime(this.duration)}`

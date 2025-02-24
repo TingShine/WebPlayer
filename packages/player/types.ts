@@ -1,4 +1,4 @@
-import { IPlayerManagerOptions } from "../manager/type";
+import type { IPlayerManagerOptions } from "../manager/type";
 
 export interface IPlayerOptions extends IPlayerManagerOptions {
 	// TODO: Worker解码

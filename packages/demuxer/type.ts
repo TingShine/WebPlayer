@@ -1,4 +1,4 @@
-import { MP4Sample } from 'mp4box'
+import type { MP4Sample } from 'mp4box'
 
 
 export type ExtMP4Sample = Omit<MP4Sample, 'data'> & {

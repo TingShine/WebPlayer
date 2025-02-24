@@ -5,7 +5,7 @@ import { WebVideoDecoder } from '../decoder'
 import { checkOptions, findSampleByTimestamp, videoSamples2Chunks } from "./utils";
 import { Queue } from '../common/queue'
 import { BUFFER_DECODE_FRAMES, BUFFER_FRAMES, BUFFER_MAX_FRAMES, BUFFER_NEED_DECODE_FRAMES } from "./constants";
-import { SyncManger } from "../sync";
+import type { SyncManger } from "../sync";
 
 /** 管理视频获取，解封装和解码
  * 
@@ -19,10 +19,10 @@ export class PlayerManager {
 	private frames: Queue<VideoFrame> = new Queue({ maxSize: BUFFER_FRAMES })
 	private cursorIndex = 0
 
-	private hasError: boolean = false
+	private hasError = false
 
-	private firstRendered: boolean = true
-	private duration: number = 0
+	private firstRendered = true
+	private duration = 0
 	private preRenderState = {
 		time: 0,
 		duration: 0,
@@ -198,7 +198,7 @@ export class PlayerManager {
 				vf.close()
 				costTime -= duration
 				while (this.frames.length) {
-					let nextVf = this.frames.shift()
+					const nextVf = this.frames.shift()
 					if (costTime < nextVf.duration / 1e3) {
 						this.drawFrame(nextVf, nextVf.duration / 1e3 - costTime)
 						return

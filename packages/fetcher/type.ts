@@ -1,4 +1,4 @@
-import { file } from "opfs-tools"
+import type { file } from "opfs-tools"
 
 export type IFetcherInput = File  | string | ReadableStream<ArrayBufferLike>
 

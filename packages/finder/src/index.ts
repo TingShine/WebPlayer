@@ -1,7 +1,7 @@
-import { VideoTrackOpts } from "mp4box"
-import { IFetcherInput } from "@fetcher"
+import type { VideoTrackOpts } from "mp4box"
+import type { IFetcherInput } from "@fetcher"
 import { WorkerEventEnum } from "./constants"
-import { IThumbnailsParams, WorkerResponse } from "./types"
+import type { IThumbnailsParams, WorkerResponse } from "./types"
 import { CustomError, ErrorTypeEnum } from '../../common/error'
 import WorkerModule from 'web-worker:./worker.ts'
 

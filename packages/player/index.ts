@@ -1,4 +1,4 @@
-import { PlayerEventEnum } from './constants'
+import type { PlayerEventEnum } from './constants'
 import type { IPlayerOptions } from './types'
 import EventEmitter from 'eventemitter3'
 import { PlayerManager } from '../manager'

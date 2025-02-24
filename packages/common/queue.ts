@@ -7,7 +7,7 @@ export interface QueueConfig {
 export class Queue<T = any> {
 	#list: T[] = []
 
-	constructor(private config: QueueConfig = { maxSize: Infinity }) {}
+	constructor(private config: QueueConfig = { maxSize: Number.POSITIVE_INFINITY }) {}
 
 	get canAddSize() {
 		return this.config.maxSize - this.#list.length

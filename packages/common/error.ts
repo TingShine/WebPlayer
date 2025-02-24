@@ -11,7 +11,7 @@ const errMsgMap = new Map<ErrorTypeEnum, string>([
 
 export class CustomError extends Error {
 
-	constructor(public errorType: ErrorTypeEnum, private customMsg: string = '') {
+	constructor(public errorType: ErrorTypeEnum, private customMsg = '') {
 		super()
 	}
 

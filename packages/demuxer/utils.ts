@@ -1,6 +1,6 @@
-import mp4box, { AudioTrackOpts, MP4ArrayBuffer, MP4File, MP4Info, MP4Sample, TrakBoxParser, VideoTrackOpts } from 'mp4box'
+import mp4box, { type AudioTrackOpts, type MP4ArrayBuffer, type MP4File, type MP4Info, type MP4Sample, type TrakBoxParser, type VideoTrackOpts } from 'mp4box'
 import type { ExtMP4Sample } from './type'
-import { WebFetcher } from '../fetcher'
+import type { WebFetcher } from '../fetcher'
 import type { IFileReader } from '../fetcher'
 import type { MP4DecodeConf } from '../decoder/type'
 
@@ -179,7 +179,7 @@ function isIDRFrame(u8Arr: Uint8Array, type: MP4Sample['description']['type']) {
 
   const dv = new DataView(u8Arr.buffer);
   let i = 0;
-  for (; i < u8Arr.byteLength - 4; ) {
+  while (i < u8Arr.byteLength - 4) {
     if (type === 'avc1' && (dv.getUint8(i + 4) & 0x1f) === 5) {
       return true;
     } else if (type === 'hvc1') {

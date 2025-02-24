@@ -1,4 +1,4 @@
-import { WorkerEventEnum } from "./constants"
+import type { WorkerEventEnum } from "./constants"
 
 export interface IThumbnailsParams {
 	start: number, end: number, step: number

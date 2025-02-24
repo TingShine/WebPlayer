@@ -1,5 +1,5 @@
-import { ExtMP4Sample } from "@demuxer"
-import { IFileReader } from "@fetcher"
+import type { ExtMP4Sample } from "@demuxer"
+import type { IFileReader } from "@fetcher"
 
 export const sleep = async (time: number) => new Promise((resolve) => setTimeout(resolve, time))
 

@@ -5,7 +5,7 @@ import type { OnDecodeError, OnFrame } from "./type"
 const log = new CommonLog('WebVideoDecoder')
 export class WebVideoDecoder {
 	private decoder: VideoDecoder | null = null
-	private decoding: boolean = false
+	private decoding = false
 
 	get decodeQueueSize() {
 		return this.decoder?.decodeQueueSize ?? 0

@@ -2,8 +2,8 @@ import { WebDemuxer } from "@demuxer";
 import { WebFetcher } from "@fetcher";
 import type { IFetcherInput } from "@fetcher";
 import { VideoFrameFinder } from "./core";
-import { VideoTrackOpts } from 'mp4box'
-import { IThumbnailsParams } from "./types";
+import type { VideoTrackOpts } from 'mp4box'
+import type { IThumbnailsParams } from "./types";
 
 export class CodecsExtractFrameModule {
 	public state = {

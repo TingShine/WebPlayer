@@ -1,11 +1,11 @@
 import EventEmitter from 'eventemitter3'
 import { PlayerEventEnum } from '../player/constants'
-import { PlayerManager } from '../manager'
-import { ProgressBar } from '../render/components/progress'
-import { PlayButton } from '../render/components/button'
-import { TimeComponent } from '../render/components/time'
-import { VideoRender } from '../render'
-import { LoadingIcon } from '../render/components/loading'
+import type { PlayerManager } from '../manager'
+import type { ProgressBar } from '../render/components/progress'
+import type { PlayButton } from '../render/components/button'
+import type { TimeComponent } from '../render/components/time'
+import type { VideoRender } from '../render'
+import type { LoadingIcon } from '../render/components/loading'
 
 interface ISyncParams{
 	userEventEmitter: EventEmitter<PlayerEventEnum>

@@ -42,7 +42,7 @@ export const videoSamples2Chunks = async (samples: ExtMP4Sample[], reader: IFile
 	)
 }
 
-const isString = (s: unknown): s is String => Object.prototype.toString.call(s) === '[object String]'
+const isString = (s: unknown): s is string => Object.prototype.toString.call(s) === '[object String]'
 export const checkOptions = (options: IPlayerManagerOptions) => {
 	if (!options.input) {
 		throw new Error('Invalid options, input must exist')

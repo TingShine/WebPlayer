@@ -1,5 +1,5 @@
 import type { IVideoRenderOptions } from "./type";
-import EventEmitter from 'eventemitter3'
+import type EventEmitter from 'eventemitter3'
 export class VideoRender {
 	#prefix = "web-player"
 

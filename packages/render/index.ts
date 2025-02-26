@@ -69,7 +69,7 @@ export class VideoRender {
 		canvas.style.width = "100%"
 		canvas.style.height = "100%"
 		canvas.style.margin = 'auto'
-		const ctx = canvas.getContext('2d')!
+		const ctx = canvas.getContext('2d')
 		this.context = ctx
 		this.canvas = canvas
 

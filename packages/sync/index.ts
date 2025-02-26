@@ -53,10 +53,10 @@ export class SyncManger extends EventEmitter {
 	}
 
 	private register() {
-		Object.keys(this.syncMap).forEach((key: keyof ISyncParams) => {
+		for (const key of Object.keys(this.syncMap)) {
 			if (key !== 'userEventEmitter' && key !== 'loadingIcon')
-				this.syncMap[key]?.register(this)
-		})
+				this.syncMap[(key as keyof ISyncParams)]?.register(this)
+		}
 	}
 
 	private initEvent() {

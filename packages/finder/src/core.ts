@@ -235,7 +235,6 @@ export class VideoFrameFinder {
     this.#curAborter.abort = true;
     this.#videoFrames.forEach((f) => f.close());
     this.#videoFrames = [];
-    this.localFileReader.close();
   };
 }
 

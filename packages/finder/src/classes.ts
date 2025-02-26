@@ -27,10 +27,10 @@ export class CodecsExtractFrameModule {
 		await this.#demuxer.demux(this.#fetcher)
 		this.state.demuxed = true
 
-		this.#frameFinder = new VideoFrameFinder(await this.#fetcher.getReader(), this.#demuxer.videoSamples, this.#demuxer.decodeConf!.video!)
+		this.#frameFinder = new VideoFrameFinder(await this.#fetcher.getReader(), this.#demuxer.videoSamples, this.#demuxer.decodeConf.video)
 		this.state.initd = true
 
-		return this.#demuxer!.videoTrack!
+		return this.#demuxer.videoTrack
 }
 
 	public async find(time: number) {
@@ -43,7 +43,7 @@ export class CodecsExtractFrameModule {
 	public async thumbnails (params: IThumbnailsParams) {
 		if (!this.state.demuxed)  throw new Error("Should load first")
 
-		const frameFinder = new VideoFrameFinder(await this.#fetcher.getReader(), this.#demuxer.videoSamples, this.#demuxer.decodeConf!.video!)
+		const frameFinder = new VideoFrameFinder(await this.#fetcher.getReader(), this.#demuxer.videoSamples, this.#demuxer.decodeConf.video)
 		const { start, end, step } = params
 
 		const frames: VideoFrame[] = []

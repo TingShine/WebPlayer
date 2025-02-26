@@ -253,7 +253,7 @@ export class PlayerManager {
 			}
 
 			if (this.state.seeking && this.frames.length) {
-				const frame = this.frames.at(0)!
+				const frame = this.frames.at(0)
 				if (frame.timestamp < this.state.seekTimestamp) {
 					const vf = this.frames.shift()
 					vf.close()

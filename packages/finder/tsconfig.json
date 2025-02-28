@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom", "ES2022"],
+    "noImplicitAny": true,
+    "module": "ES2020",
+    "target": "es6",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "noEmit": true,
+    "rootDir": "../",
+    "resolveJsonModule": true,
+    "paths": {
+      "@fetcher": ["../fetcher"],
+      "@demuxer": ["../demuxer"],
+    }
+  },
+  "include": ["./src/*.ts", "./worker.d.ts", "../types/*.ts", "../demuxer/*.ts", "../fetcher/*.ts"]
+}

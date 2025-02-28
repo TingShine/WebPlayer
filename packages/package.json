@@ -1,0 +1,42 @@
+{
+  "name": "@web-player/base",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.mjs",
+  "types": "dist/types/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "rollup -c --watch",
+    "build": "rollup -c"
+  },
+  "keywords": [
+    "webcodecs",
+    "frame",
+    "video",
+    "mp4"
+  ],
+  "files": [
+    "dist"
+  ],
+  "author": "Shine",
+  "license": "ISC",
+  "dependencies": {
+    "event-emitter": "^0.3.5",
+    "eventemitter3": "^5.0.1",
+    "mp4box": "^0.5.3",
+    "opfs-tools": "^0.7.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/event-emitter": "^0.3.5",
+    "rollup": "^4.34.6",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-web-worker-loader": "^1.7.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3"
+  }
+}

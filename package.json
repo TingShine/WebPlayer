@@ -1,0 +1,27 @@
+{
+  "name": "wecodecsbplayer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:finder": "pnpm run --filter '@web-player/finder' dev &  pnpm --filter finder-example dev",
+    "build:finder": "pnpm run --filter '@web-player/finder' build",
+    "dev:player": "pnpm run --filter '@web-player/base' dev ",
+    "example:player": "pnpm run --filter player-example dev",
+    "build:player": "pnpm run --filter '@web-player/base' build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@eslint/js": "^9.17.0",
+    "@types/dom-webcodecs": "^0.1.13",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.18.2",
+    "vite": "^6.0.5"
+  }
+}

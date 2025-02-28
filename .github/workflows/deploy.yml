@@ -1,0 +1,43 @@
+name: Deploy Example #action名称
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # If you're using actions/checkout@v2 - must set persist-credentials to false in most cases for the deployment to work correctly.
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Cache
+        uses: actions/cache@v2
+        env:
+            cache-name: cache-nodemodules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install and Build
+        run: |
+          pnpm install
+          pnpm run build:player
+          cd examples/webplayer
+          npm run build
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.2.2
+        with:
+          access_token: ${{ secrets.GH_TOKEN }}
+          branch: gh-pages
+          folder: examples/webplayer/dist
